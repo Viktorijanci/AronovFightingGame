@@ -1,0 +1,2 @@
+live-server ./
+pause
