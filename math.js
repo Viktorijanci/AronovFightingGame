@@ -64,13 +64,16 @@ function resolveGravity(playerArr){
 function resolveAttacking(playerArr,sides,cooldown){
   playerArr.forEach((item, i) => {
     if(item.attacking && cooldown){
-      const side = player.orient==="left" ? sides[0] : sides[1];
+      const side = item.orient==="left" ? sides[0] : sides[1];
       const victim = i===0 ? 1 : 0;
       item.attackBox.set(item.cube.position,side);
       if(item.attackBox.intersectObject(playerArr[victim].cube).length!==0){
         let audio = new Audio("./Recording.m4a");
         audio.play();
       };
+      if(!playerArr[victim].shielding){
+        playerArr[victim].hp-=5;
+      }
       item.attacking=false;
       cooldown=false;
     }else{
@@ -88,6 +91,10 @@ class Player {
     //model
     this.cube=cube;
     this.attackBox=attackBox;
+
+    //stats
+    this.hp=100;
+    this.meter=0;
 
     //status
     this.stunned=false;
