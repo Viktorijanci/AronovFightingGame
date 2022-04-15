@@ -1,2 +1,2 @@
-live-server ./
+live-server ./dist
 pause

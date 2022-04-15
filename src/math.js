@@ -1,14 +1,20 @@
 function mapPlayer1(map,player){
   if(map.a){
-    player.cube.position.x-=1;
+    player.cube.position.x-=1
+    player.shieldBox.position.x-=1;
     player.orient="left";
   }
   if(map.d){
     player.cube.position.x+=1;
+    player.shieldBox.position.x+=1;
     player.orient="right";
   }
   if(map.w){
     player.jump();
+  }
+  if(map.q){
+    player.shield();
+    player.shieldBox.material.opacity=0.3;
   }
   if(map.e){
     player.attack();
@@ -23,14 +29,20 @@ function mapPlayer1(map,player){
 function mapPlayer2(map,player){
   if(map.j){
     player.cube.position.x-=1;
+    player.shieldBox.position.x-=1;
     player.orient="left";
   }
   if(map.l){
     player.cube.position.x+=1;
+    player.shieldBox.position.x+=1;
     player.orient="right";
   }
   if(map.i){
     player.jump();
+  }
+  if(map.u){
+    player.shield();
+    player.shieldBox.material.opacity=0.3;
   }
   if(map.o){
     player.attack();
@@ -46,6 +58,7 @@ function resolveGravity(playerArr){
   playerArr.forEach((item, i) => {
     if(item.jumping && item.cube.position.y<10){
       item.cube.position.y+=0.5;
+      item.shieldBox.position.y+=0,5;
       return;
     }
     if(item.cube.position.y===10){
@@ -54,6 +67,7 @@ function resolveGravity(playerArr){
     }
     if(item.descending && item.cube.position.y>4){
       item.cube.position.y-=0.5;
+      item.shieldBox.position.y-=0,5;
     }
     if(item.cube.position.y===5){
       item.descending=false;
@@ -63,89 +77,40 @@ function resolveGravity(playerArr){
 
 function resolveAttacking(playerArr,sides){
   playerArr.forEach((item, i) => {
-<<<<<<< HEAD
     if(item.attacking && item.cooldown){
-      const side = player.orient==="left" ? sides[0] : sides[1];
-=======
-    if(item.attacking && cooldown){
       const side = item.orient==="left" ? sides[0] : sides[1];
->>>>>>> 392f16081eb9c18aecd31ee528210e688806ea07
       const victim = i===0 ? 1 : 0;
       item.attackBox.set(item.cube.position,side);
       if(item.attackBox.intersectObject(playerArr[victim].cube).length!==0){
-        let audio = new Audio("./Recording.m4a");
-        audio.play();
         if(!playerArr[victim].shielding){
-          playerArr[victim].hp-=5;
+          if(item.attackType==="light"){
+            playerArr[victim].hp-=5;
+          }else{
+            playerArr[victim].hp-=10;
+          }
+          playerArr[victim].cube.material.color=new THREE.Color(0x800080);
         }
       };
-      if(!playerArr[victim].shielding){
-        playerArr[victim].hp-=5;
-      }
       item.attacking=false;
       item.cooldown=false;
-    }else{
-      console.log("rip");
     }
   });
 }
 
 function resolveShielding(playerArr){
   playerArr.forEach((item, i) => {
-    if(item.shielding && cooldown){
+    if(item.shielding && item.cooldown){
       const victim = i===0 ? 1 : 0;
-      if(playerArr[victim].attacking){
+      if(playerArr[victim].attacking && playerArr[victim].attackBox.intersectObject(item.cube).length!==0){
          playerArr[victim].stunned=true;
          playerArr[victim].attacking=false;
          playerArr[victim].cooldown=false;
       }
       item.shielding=false;
       item.cooldown=false;
-    }else{
-      console.log("rip");
+      item.shieldBox.material.opacity=0;
     }
   });
 }
 
-class Player {
-  constructor(cube,attackBox) {
-    //model
-    this.cube=cube;
-    this.attackBox=attackBox;
-
-    //stats
-    this.hp=100;
-    this.meter=0;
-
-    //status
-    this.stunned=false;
-
-    //movement
-    this.jumping=false;
-    this.descending=false;
-    this.orient="right";
-
-    //attacks
-    this.attacking=false;
-    this.attackType=null;
-    this.cooldown=true;
-    this.shielding=false;
-  }
-  jump(){
-    if(!this.stunned && !(this.descending && !this.jumping)){
-      this.jumping=true;
-    }
-  }
-  attack(){
-    if(!this.stunned && !this.attacking && !this.shielding){
-      this.attacking=true;
-    }
-  }
-  shield(){
-    if(!this.stunned && !this.attacking && !this.shielding){
-      this.shielding=true;
-    }
-  }
-}
-
-export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding,Player};
+export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding};
