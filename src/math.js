@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 function mapPlayer1(map,player){
   if(map.a){
     player.cube.position.x-=1
@@ -75,7 +77,7 @@ function resolveGravity(playerArr){
   });
 }
 
-function resolveAttacking(playerArr,sides){
+function resolveAttacking(playerArr,sides,counterArr){
   playerArr.forEach((item, i) => {
     if(item.attacking && item.cooldown){
       const side = item.orient==="left" ? sides[0] : sides[1];
@@ -87,17 +89,21 @@ function resolveAttacking(playerArr,sides){
             playerArr[victim].hp-=5;
           }else{
             playerArr[victim].hp-=10;
+            playerArr[victim].stunned=true;
+            playerArr[victim].material.color = new THREE.Color(0x800080);
+            counterArr[2].start();
           }
-          playerArr[victim].cube.material.color=new THREE.Color(0x800080);
+          console.log(playerArr[victim].hp);
         }
       };
       item.attacking=false;
       item.cooldown=false;
+      counterArr[i].start();
     }
   });
 }
 
-function resolveShielding(playerArr){
+function resolveShielding(playerArr,counterArr){
   playerArr.forEach((item, i) => {
     if(item.shielding && item.cooldown){
       const victim = i===0 ? 1 : 0;
@@ -105,12 +111,30 @@ function resolveShielding(playerArr){
          playerArr[victim].stunned=true;
          playerArr[victim].attacking=false;
          playerArr[victim].cooldown=false;
+         playerArr[victim].material.color = new THREE.Color(0x800080);
+         counterArr[victim].start();
+         counterArr[2].start();
       }
       item.shielding=false;
       item.cooldown=false;
       item.shieldBox.material.opacity=0;
+      counterArr[i].start();
+      counterArr[2].start();
     }
   });
+}
+
+function resolveStatus(playerArr,counterArr){
+  playerArr.forEach((item, i) => {
+    if(item.stunned && counter[2].getDelta()>=1 && counter[2].running){
+      item.stunned=false;
+      counter[2].stop();
+    }
+    if(item.cooldown && counter[i].getDelta()>=1 && counter[i].running){
+      item.cooldown=false;
+      counter[i].stop();
+    }
+  })
 }
 
 export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding};

@@ -16,9 +16,10 @@ document.getElementById("startGame").addEventListener("click", function onEvent(
 });
 
 class GameState {
-  constructor(players,map){
+  constructor(players,map,counters){
     this.players=players;
     this.map=map;
+    this.counters=counters;
   }
 }
 
@@ -26,11 +27,15 @@ function updateBars(playerArr){
   let one = document.getElementById('one');
   let two = document.getElementById('two');
   let original1 = one.style.background.split(",");
+  let original2 = two.style.background.split(",");
   original1[2]=playerArr[0].hp/100;
-  let original2 = two.style.background.split(",")
   original2[2]=playerArr[1].hp/100;
+  original1[2] = (original1[2]*100).toString()+"%";
+  original2[2] = (original2[2]*100).toString()+"%";
   one.style.background=original1.join(",");
   two.style.background=original2.join(",");
+  one.innerHTML=original1[2];
+  two.innerHTML=original2[2];
 }
 
 function start(){
@@ -138,6 +143,11 @@ function start(){
   let player1 = new Classes.Player(player1cube,attack1,shield1Mesh);
   let player2 = new Classes.Player(player2cube,attack2,shield2Mesh);
   let playerArr = [player1,player2];
+
+  let counter1 = new THREE.Clock(false);
+  let counter2 = new THREE.Clock(false);
+  let counter3 = new THREE.Clock(false);
+
   let gameState = new GameState(playerArr,"test");
 
   let num = 0, map={};
@@ -147,9 +157,6 @@ function start(){
   document.addEventListener("keydown", event => {
     map[event.key]=true;
   });
-
-  let counter1 = 0;
-  let counter2 = 0;
 
   function animate() {
     stats.begin();
@@ -163,13 +170,12 @@ function start(){
       player2.cooldown=true;
       counter2=23;
     }
+    Logic.resolveStatus(playerArr,[counter1,counter2,counter3]);
     Logic.resolveGravity(playerArr);
-    Logic.resolveShielding(playerArr);
-    Logic.resolveAttacking(playerArr,[left,right]);
-    counter1 = counter1<23 ? counter1+=1 : 0;
-    counter2 = counter2<23 ? counter2+=1 : 0;
-    player1.cooldown = counter1===23 ? true : false;
-    player2.cooldown = counter2===23 ? true : false;
+    Logic.resolveShielding(playerArr,[counter1,counter2,counter3]);
+    Logic.resolveAttacking(playerArr,[left,right],[counter1,counter2,counter3]);
+    player1.cooldown = counter1.getDelta()>=1 ? true : false;
+    player2.cooldown = counter2.getDelta()>=1 ? true : false;
     renderer.render(scene, camera);
     updateBars(playerArr);
     stats.end();
