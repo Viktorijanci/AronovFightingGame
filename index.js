@@ -80,20 +80,25 @@ function start(){
     requestAnimationFrame(animate);
     Game.mapPlayer1(map,player1);
     Game.mapPlayer2(map,player2);
-    if(player1.attacking===true){
+    if(player1.attacking || player1.shielding){
       player1.cooldown=true;
       counter1=23;
     }
-    if(player2.attacking===true){
+    if(player2.attacking || player2.shielding){
       player2.cooldown=true;
       counter2=23;
     }
     Game.resolveGravity(playerArr);
+    Game.resolveShielding(playerArr);
     Game.resolveAttacking(playerArr,[left,right],cooldown);
-    // counter = counter<23 ? counter+=1 : 0;
-    // console.log(counter);
-    // cooldown = counter===23 ? true : false;
-    // console.log(cooldown);
+    counter1 = counter1<23 ? counter1+=1 : 0;
+    console.log(counter1);
+    counter2 = counter2<23 ? counter2+=1 : 0;
+    console.log(counter2);
+    player1.cooldown = counter1===23 ? true : false;
+    console.log(player1.cooldown);
+    player2.cooldown = counter2===23 ? true : false;
+    console.log(player2.cooldown);
     renderer.render(scene, camera);
   } animate();
 }

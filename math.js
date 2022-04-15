@@ -61,26 +61,42 @@ function resolveGravity(playerArr){
   });
 }
 
-function resolveAttacking(playerArr,sides,cooldown){
+function resolveAttacking(playerArr,sides){
   playerArr.forEach((item, i) => {
-    if(item.attacking && cooldown){
+    if(item.attacking && item.cooldown){
       const side = player.orient==="left" ? sides[0] : sides[1];
       const victim = i===0 ? 1 : 0;
       item.attackBox.set(item.cube.position,side);
       if(item.attackBox.intersectObject(playerArr[victim].cube).length!==0){
         let audio = new Audio("./Recording.m4a");
         audio.play();
+        if(!playerArr[victim].shielding){
+          playerArr[victim].hp-=5;
+        }
       };
       item.attacking=false;
-      cooldown=false;
+      item.cooldown=false;
     }else{
       console.log("rip");
     }
   });
 }
 
-function resolveShielding(){
-
+function resolveShielding(playerArr){
+  playerArr.forEach((item, i) => {
+    if(item.shielding && cooldown){
+      const victim = i===0 ? 1 : 0;
+      if(playerArr[victim].attacking){
+         playerArr[victim].stunned=true;
+         playerArr[victim].attacking=false;
+         playerArr[victim].cooldown=false;
+      }
+      item.shielding=false;
+      item.cooldown=false;
+    }else{
+      console.log("rip");
+    }
+  });
 }
 
 class Player {
@@ -99,8 +115,8 @@ class Player {
 
     //attacks
     this.attacking=false;
-    this.cooldown=0;
     this.attackType=null;
+    this.cooldown=true;
     this.shielding=false;
   }
   jump(){
@@ -120,4 +136,4 @@ class Player {
   }
 }
 
-export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,Player};
+export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding,Player};
