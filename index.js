@@ -6,6 +6,13 @@ document.getElementById("startGame").addEventListener("click", function onEvent(
   start();
 });
 
+class GameState {
+  constructor(players,map){
+    this.players=players;
+    this.map=map;
+  }
+}
+
 function start(){
   //Create the scene
   let scene = new THREE.Scene();
@@ -65,6 +72,7 @@ function start(){
   let player1 = new Game.Player(player1cube,attack1);
   let player2 = new Game.Player(player2cube,attack2);
   let playerArr = [player1,player2];
+  let gameState = new GameState(playerArr,"test");
 
   let num = 0, map={};
   document.addEventListener("keyup", event => {
@@ -76,6 +84,7 @@ function start(){
 
   let counter1 = 0;
   let counter2 = 0;
+
   function animate() {
     requestAnimationFrame(animate);
     Game.mapPlayer1(map,player1);
