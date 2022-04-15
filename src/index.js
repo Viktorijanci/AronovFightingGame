@@ -79,20 +79,20 @@ function start(){
   let player2cube = new THREE.Mesh(player2box,player2material);
   scene.add(player2cube);
 
-  //Player models (v1, waiting for new model)
-  // let ucitavac = new GLTFLoader();
-  // ucitavac.load("./human.glb", gltf => {
-  //   scene.add(gltf.scene);
-  //   console.log(gltf.animations); // Array<THREE.AnimationClip>
-	// 	console.log(gltf.scene); // THREE.Group
-	// 	console.log(gltf.scenes); // Array<THREE.Group>
-	// 	console.log(gltf.cameras); // Array<THREE.Camera>
-	// 	console.log(gltf.asset); // Object
-  // }, xhr => {
-  //   console.log(( xhr.loaded / xhr.total * 100 ) + '% loaded');
-  // }, err => {
-  //   console.log(err);
-  // })
+  Player models (v1, waiting for new model)
+  let ucitavac = new GLTFLoader();
+  ucitavac.load("./fighter.gltf", gltf => {
+    // scene.add(gltf.scene);
+    console.log(gltf.animations); // Array<THREE.AnimationClip>
+		console.log(gltf.scene); // THREE.Group
+		console.log(gltf.scenes); // Array<THREE.Group>
+		console.log(gltf.cameras); // Array<THREE.Camera>
+		console.log(gltf.asset); // Object
+  }, xhr => {
+    console.log(( xhr.loaded / xhr.total * 100 ) + '% loaded');
+  }, err => {
+    console.log(err);
+  })
 
   //attack direction
   const attack1 = new THREE.Raycaster();
