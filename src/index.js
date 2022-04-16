@@ -38,7 +38,7 @@ function updateBars(playerArr){
   two.innerHTML=original2[2];
 }
 
-function start(){
+async function start(){
   let one = document.getElementById('one');
   let two = document.getElementById('two');
   one.style.display="inherit";
@@ -60,39 +60,49 @@ function start(){
   let cube = new THREE.Mesh( geometry, material );
   scene.add(cube);
 
-  // White directional light at half intensity shining from the top.
-  let directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-  scene.add(directionalLight);
+  // svetlooooo
+  let light = new THREE.AmbientLight(0xffffff);
+  scene.add(light);
 
   //vectors
   const left = new THREE.Vector3(-1,0,0);
   const right = new THREE.Vector3(1,0,0);
 
   //Player models (primitive)
-  let player1box = new THREE.BoxGeometry(5,3,1);
-  const player1material = new THREE.MeshToonMaterial({color:0xff0000});
-  let player1cube = new THREE.Mesh(player1box,player1material);
-  scene.add(player1cube);
+  // let player1box = new THREE.BoxGeometry(5,3,1);
+  // const player1material = new THREE.MeshToonMaterial({color:0xff0000});
+  // let player1cube = new THREE.Mesh(player1box,player1material);
+  // scene.add(player1cube);
 
   let player2box = new THREE.BoxGeometry(5,3,1);
   const player2material = new THREE.MeshToonMaterial({color:0x0000ff});
   let player2cube = new THREE.Mesh(player2box,player2material);
   scene.add(player2cube);
 
-  Player models (v1, waiting for new model)
+  // Player models (v1, waiting for new model)
+  let trajanje = new THREE.Clock();
+  let mixer;
   let ucitavac = new GLTFLoader();
-  ucitavac.load("./fighter.gltf", gltf => {
-    // scene.add(gltf.scene);
-    console.log(gltf.animations); // Array<THREE.AnimationClip>
-		console.log(gltf.scene); // THREE.Group
-		console.log(gltf.scenes); // Array<THREE.Group>
-		console.log(gltf.cameras); // Array<THREE.Camera>
-		console.log(gltf.asset); // Object
-  }, xhr => {
+  let igrac1 = await ucitavac.loadAsync("./Fighter.gltf", xhr => {
     console.log(( xhr.loaded / xhr.total * 100 ) + '% loaded');
-  }, err => {
-    console.log(err);
   })
+  console.log(igrac1);
+
+  scene.add(igrac1.scene);
+  igrac1.scene.position.x=-30;
+  igrac1.scene.position.y=3;
+  igrac1.scene.position.z=-30;
+  igrac1.scene.rotation.y=Math.PI * 3 / 2;
+  igrac1.scene.scale.set(3,3,3);
+  console.log(igrac1.animations); // Array<THREE.AnimationClip>
+	console.log(igrac1.scene); // THREE.Group
+	console.log(igrac1.scenes); // Array<THREE.Group>
+	console.log(igrac1.cameras); // Array<THREE.Camera>
+	console.log(igrac1.asset); // Object
+  mixer = new THREE.AnimationMixer(igrac1.scene);
+  let clips = igrac1.animations;
+  let idle = mixer.clipAction(clips[0]);
+  idle.play();
 
   //attack direction
   const attack1 = new THREE.Raycaster();
@@ -124,9 +134,9 @@ function start(){
   const a = new THREE.Vector3(-30,5,-30);
   const b = new THREE.Vector3(30,5,-30);
 
-  player1cube.position.y =5;
-  player1cube.position.z=-30;
-  player1cube.position.x = -30;
+  // player1cube.position.y =5;
+  // player1cube.position.z=-30;
+  // player1cube.position.x = -30;
 
   shield1Mesh.position.x=-30;
   shield1Mesh.position.y=5;
@@ -140,7 +150,7 @@ function start(){
   shield2Mesh.position.y=5;
   shield2Mesh.position.z=-30;
 
-  let player1 = new Classes.Player(player1cube,attack1,shield1Mesh);
+  let player1 = new Classes.Player(igrac1.scene,attack1,shield1Mesh);
   let player2 = new Classes.Player(player2cube,attack2,shield2Mesh);
   let playerArr = [player1,player2];
 
@@ -160,6 +170,8 @@ function start(){
 
   function animate() {
     stats.begin();
+    let delta = trajanje.getDelta();
+    mixer.update(delta);
     Logic.mapPlayer1(map,player1);
     Logic.mapPlayer2(map,player2);
     if(player1.attacking || player1.shielding){

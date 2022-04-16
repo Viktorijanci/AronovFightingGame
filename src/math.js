@@ -67,11 +67,11 @@ function resolveGravity(playerArr){
       item.jumping=false;
       item.descending=true;
     }
-    if(item.descending && item.cube.position.y>4){
+    if(item.descending && item.cube.position.y>2){
       item.cube.position.y-=0.5;
       item.shieldBox.position.y-=0,5;
     }
-    if(item.cube.position.y===5){
+    if(item.cube.position.y===3){
       item.descending=false;
     }
   });
@@ -126,15 +126,15 @@ function resolveShielding(playerArr,counterArr){
 
 function resolveStatus(playerArr,counterArr){
   playerArr.forEach((item, i) => {
-    if(item.stunned && counter[2].getDelta()>=1 && counter[2].running){
+    if(item.stunned && counterArr[2].getDelta()>=1 && counterArr[2].running){
       item.stunned=false;
-      counter[2].stop();
+      counterArr[2].stop();
     }
-    if(item.cooldown && counter[i].getDelta()>=1 && counter[i].running){
+    if(item.cooldown && counterArr[i].getDelta()>=1 && counterArr[i].running){
       item.cooldown=false;
-      counter[i].stop();
+      counterArr[i].stop();
     }
   })
 }
 
-export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding};
+export {mapPlayer1,mapPlayer2,resolveGravity,resolveAttacking,resolveShielding,resolveStatus};
