@@ -3,9 +3,17 @@
 	<script type="module" src="./main.js"></script>
 </head>
 <body>
-  <button type="button" name="button" id="startGame">Start</button>
+	<div id="mainmenu">
+	  <button type="button" name="button" id="startGame">Start</button>
+		<button type="button" name="opcije" id="opcijeGame">Options</button>
+		<button type="button" name="debug" id="debugGame">Extra</div>
+	</div>
+	<div id="ui" style="display:none;position:fixed;top:0px;left:0px">
+    <div id="one" class="hpBar" style="background:linear-gradient(to right,green 0%,100%,black 100%);width:100px;border:1px red solid">Player1</div>
+    <div id="two" class="hpBar" style="background:linear-gradient(to right,green 0%,100%,black 100%);width:100px;border:1px red solid">Player2</div>
+		<div id="sat"></div>
+		<div id="pozicije"></div>
+	</div>
   <div id="gameRender">
-    <div id="one" class="hpBar" style="display:none;background:linear-gradient(to right,green 0%,100%,black 100%);width:100px;border:1px red solid">Player1</div>
-    <div id="two" class="hpBar" style="display:none;background:linear-gradient(to right,green 0%,100%,black 100%);width:100px;border:1px red solid">Player2</div>
  	</div>
 </body>

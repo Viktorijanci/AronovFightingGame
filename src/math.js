@@ -2,13 +2,19 @@ import * as THREE from "three";
 
 function mapPlayer1(map,player){
   if(map.a){
-    player.cube.position.x-=1
-    player.shieldBox.position.x-=1;
+    if(player.cube.position.x-1>-38){
+      player.cube.position.x-=1
+      player.shieldBox.position.x-=1;
+    }
+    player.cube.rotation.y=Math.PI / 2;
     player.orient="left";
   }
   if(map.d){
-    player.cube.position.x+=1;
-    player.shieldBox.position.x+=1;
+    if(player.cube.position.x+1<38){
+      player.cube.position.x+=1
+      player.shieldBox.position.x+=1;
+    }
+    player.cube.rotation.y=Math.PI * 3 / 2;
     player.orient="right";
   }
   if(map.w){
@@ -30,13 +36,17 @@ function mapPlayer1(map,player){
 
 function mapPlayer2(map,player){
   if(map.j){
-    player.cube.position.x-=1;
-    player.shieldBox.position.x-=1;
+    if(player.cube.position.x-1>-38){
+      player.cube.position.x-=1
+      player.shieldBox.position.x-=1;
+    }
     player.orient="left";
   }
   if(map.l){
-    player.cube.position.x+=1;
-    player.shieldBox.position.x+=1;
+    if(player.cube.position.x+1<38){
+      player.cube.position.x+=1
+      player.shieldBox.position.x+=1;
+    }
     player.orient="right";
   }
   if(map.i){
@@ -67,21 +77,28 @@ function resolveGravity(playerArr){
       item.jumping=false;
       item.descending=true;
     }
-    if(item.descending && item.cube.position.y>2){
+    if(item.descending && item.cube.position.y>4){
       item.cube.position.y-=0.5;
       item.shieldBox.position.y-=0,5;
+      return;
     }
-    if(item.cube.position.y===3){
+    if(item.cube.position.y===4){
       item.descending=false;
     }
   });
 }
 
-function resolveAttacking(playerArr,sides,counterArr){
+function resolveAttacking(playerArr,sides,counterArr,animationArr){
   playerArr.forEach((item, i) => {
     if(item.attacking && item.cooldown){
       const side = item.orient==="left" ? sides[0] : sides[1];
       const victim = i===0 ? 1 : 0;
+      if(item.cube.rotation.y!==0){
+        console.log(animationArr);
+        animationArr[1].setLoop(THREE.LoopOnce);
+        animationArr[1].setEffectiveTimeScale(8);
+        animationArr[1].play();
+      };
       item.attackBox.set(item.cube.position,side);
       if(item.attackBox.intersectObject(playerArr[victim].cube).length!==0){
         if(!playerArr[victim].shielding){
@@ -93,11 +110,10 @@ function resolveAttacking(playerArr,sides,counterArr){
             playerArr[victim].material.color = new THREE.Color(0x800080);
             counterArr[2].start();
           }
-          console.log(playerArr[victim].hp);
         }
       };
       item.attacking=false;
-      item.cooldown=false;
+      item.cooldown=true;
       counterArr[i].start();
     }
   });
@@ -116,21 +132,20 @@ function resolveShielding(playerArr,counterArr){
          counterArr[2].start();
       }
       item.shielding=false;
-      item.cooldown=false;
+      item.cooldown=true;
       item.shieldBox.material.opacity=0;
       counterArr[i].start();
-      counterArr[2].start();
     }
   });
 }
 
 function resolveStatus(playerArr,counterArr){
   playerArr.forEach((item, i) => {
-    if(item.stunned && counterArr[2].getDelta()>=1 && counterArr[2].running){
+    if(item.stunned && counterArr[2].elapsedTime>=1 && counterArr[2].running){
       item.stunned=false;
       counterArr[2].stop();
     }
-    if(item.cooldown && counterArr[i].getDelta()>=1 && counterArr[i].running){
+    if(item.cooldown && counterArr[i].elapsedTime>=1 && counterArr[i].running){
       item.cooldown=false;
       counterArr[i].stop();
     }
