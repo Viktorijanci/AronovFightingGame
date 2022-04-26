@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-function mapPlayer1(map,player){
-  if(map.a){
+function mapPlayer1(map,oldmap,player){
+  if(map.a && !oldmap.a){
     if(player.cube.position.x-1>-38){
       player.cube.position.x-=1
       player.shieldBox.position.x-=1;
@@ -9,7 +9,7 @@ function mapPlayer1(map,player){
     player.cube.rotation.y=Math.PI / 2;
     player.orient="left";
   }
-  if(map.d){
+  if(map.d && !oldmap.d){
     if(player.cube.position.x+1<38){
       player.cube.position.x+=1
       player.shieldBox.position.x+=1;
@@ -17,50 +17,50 @@ function mapPlayer1(map,player){
     player.cube.rotation.y=Math.PI * 3 / 2;
     player.orient="right";
   }
-  if(map.w){
+  if(map.w && !oldmap.w){
     player.jump();
   }
-  if(map.q){
+  if(map.q && !oldmap.q){
     player.shield();
     player.shieldBox.material.opacity=0.3;
   }
-  if(map.e){
+  if(map.e && !oldmap.e){
     player.attack();
     player.attackType="light";
   }
-  if(map.r){
+  if(map.r && !oldmap.r){
     player.attack();
     player.attackType="heavy";
   }
 }
 
-function mapPlayer2(map,player){
-  if(map.j){
+function mapPlayer2(map,oldmap,player){
+  if(map.j && !oldmap.j){
     if(player.cube.position.x-1>-38){
       player.cube.position.x-=1
       player.shieldBox.position.x-=1;
     }
     player.orient="left";
   }
-  if(map.l){
+  if(map.l && !oldmap.l){
     if(player.cube.position.x+1<38){
       player.cube.position.x+=1
       player.shieldBox.position.x+=1;
     }
     player.orient="right";
   }
-  if(map.i){
+  if(map.i && !oldmap.i){
     player.jump();
   }
-  if(map.u){
+  if(map.u && !oldmap.u){
     player.shield();
     player.shieldBox.material.opacity=0.3;
   }
-  if(map.o){
+  if(map.o && !oldmap.o){
     player.attack();
     player.attackType="light";
   }
-  if(map.p){
+  if(map.p && !oldmap.p){
     player.attack();
     player.attackType="heavy";
   }
@@ -91,6 +91,7 @@ function resolveGravity(playerArr){
 function resolveAttacking(playerArr,sides,counterArr,animationArr){
   playerArr.forEach((item, i) => {
     if(item.attacking && item.cooldown){
+      if(animationArr[1].time!==0) return;
       const side = item.orient==="left" ? sides[0] : sides[1];
       const victim = i===0 ? 1 : 0;
       if(item.cube.rotation.y!==0){

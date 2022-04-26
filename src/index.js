@@ -109,6 +109,7 @@ async function start(){
   let jab = mixer.clipAction(clips[1]);
   idle.play();
   mixer.addEventListener('finished', e => {
+    console.log(e);
     e.action.stop();
   })
 
@@ -179,7 +180,7 @@ async function start(){
   let gameState = new GameState(playerArr,"test");
 
   //kreiranje niza za detektovanje unosa sa tastature
-  let num = 0, map={};
+  let num = 0, map={}, oldmap={};
   document.addEventListener("keyup", event => {
     map[event.key]=false;
   });
@@ -217,9 +218,9 @@ async function start(){
     let delta = trajanje.getDelta();
     mixer.update(delta);
 
-    //provera za unos
-    Logic.mapPlayer1(map,player1);
-    Logic.mapPlayer2(map,player2);
+    Logic.mapPlayer1(map,oldmap,player1);
+    Logic.mapPlayer2(map,oldmap,player2);
+    oldmap=map;
 
     //fizika
     Logic.resolveStatus(playerArr,[counter1,counter2,counter3]);
@@ -229,10 +230,10 @@ async function start(){
 
     //ažuriranje scene
     renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 
     //ažuriranje hpa
     updateBars(playerArr);
-    requestAnimationFrame(animate);
 
     stats.end();
   } animate();
