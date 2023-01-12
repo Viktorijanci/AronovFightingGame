@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
-    "live-server": "^1.1.0",
+    "live-server": "^1.2.2",
     "stats.js": "^0.17.0",
     "three": "^0.139.2"
   },
